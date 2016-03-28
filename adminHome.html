@@ -1,0 +1,54 @@
+<html lang="en-US">
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="https://cdn.firebase.com/js/client/2.4.1/firebase.js"></script>
+<script src="https://cdn.firebase.com/libs/angularfire/1.1.3/angularfire.min.js"></script>
+<body>
+<div ng-app="admin-home" ng-controller="controller">
+    admin home
+</div>
+
+<div>
+    <h3>Requested Jobs</h3>
+    <ul>
+        <li ng-repeat="obj in service_request_data | filter:{ provider: 'n/a'}">{{ obj.name }}, <button ng-click="acceptOrder()">Accept</button></li>
+    </ul>
+</div>
+<div>
+    <h3>Accept a Job</h3>
+    <ul>
+        <li ng-repeat="obj in service_request_data | filter:{ completed: true}">{{ obj.name }} ({{ obj.provider}})</li>
+    </ul>
+</div>
+<div>
+    <h3>Completed a service</h3>
+    <ul>
+        <li ng-repeat="obj in service_request_data | filter:{ completed: true}">{{ obj.name }} ({{ obj.provider}})</li>
+    </ul>
+</div>
+
+<script>
+    var app = angular.module('admin-home', ["firebase"]);
+    app.controller('controller', function($scope)
+    {
+        var ref = new Firebase("https://project-snowman.firebaseio.com/");
+        var authData = ref.getAuth();
+        if(authData)
+        {
+            ref.child("role").child(authData.uid).on("value", function(data)
+            {
+                if(data.val() != "admin")
+                {
+                    window.location.href = "home.html";
+                }
+            });
+        }
+    });
+
+    $scope.acceptOrder()
+    {
+      ref.on("service_requests").child("service_name", function(data))
+    }
+    
+</script>
+</body>
+</html>
